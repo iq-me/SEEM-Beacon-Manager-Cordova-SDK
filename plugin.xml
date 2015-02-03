@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        id="com.glanzkinder.seem" version="0.0.1">
+    <name>SEEM-Manager SDK</name>
+    <description>Cordova/PhoneGap Plugin for SEEM-Manger</description>
+    <license>TODO</license>
+    <keywords>cordova, phonegap, beacons, iBeacons, SEEM, SEEM-Manager</keywords>
+    <js-module src="www/seem.js" name="SEEM">
+        <clobbers target="SEEM" />
+    </js-module>
+    <platform name="ios">
+        <framework src="CoreBluetooth.framework" />
+        <framework src="CoreLocation.framework" />
+        <framework src="SystemConfiguration.framework" />
+        <framework src="src/ios/Frameworks/SEEM.framework" custom="true" />
+        <header-file src="src/ios/SEEM.h" />
+        <source-file src="src/ios/SEEM.m" />
+        <config-file target="config.xml" parent="/*">
+            <feature name="SEEM">
+                <param name="ios-package" value="SEEM" />
+            </feature>
+        </config-file>
+        <config-file parent="/*" target="config.xml">
+            <feature name="LocationManager">
+                <param name="ios-package" value="CDVLocationManager"/>
+            </feature>
+        </config-file>
+        <config-file target="*-Info.plist" parent="NSLocationAlwaysUsageDescription">
+            <string>This plugin would like to connect your to SEEM-Manager.</string>
+        </config-file>
+    </platform>
+</plugin>
