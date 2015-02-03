@@ -109,7 +109,7 @@ This method is only necessary if you have a SEEM Management Platform on premise 
 
 #### Example
 
-    SEEM.setApiUrl('http://example.com');
+    SEEM.setApiUrl('example.com'); // URL without a protocol. The SDK will add http or https.
 
 
 ### setApiSslEnabled
