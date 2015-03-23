@@ -12,13 +12,15 @@
 - (void)setApiUrl:(CDVInvokedUrlCommand *)command;
 - (void)setApiSslEnabled:(CDVInvokedUrlCommand *)command;
 - (void)setAutoUuidFetch:(CDVInvokedUrlCommand *)command;
+- (void)setPayload:(CDVInvokedUrlCommand *)command;
 
 - (void)getAllMonitoredBeaconRegions:(CDVInvokedUrlCommand *)command;
 - (void)startListeningToBeaconRegion:(CDVInvokedUrlCommand *)command;
 - (void)stopListeningToBeaconRegion:(CDVInvokedUrlCommand *)command;
 
-- (void)onBeaconEnter:(CDVInvokedUrlCommand *)command;
-- (void)onBeaconExit:(CDVInvokedUrlCommand *)command;
+- (void)onEnterBeacon:(CDVInvokedUrlCommand *)command;
+- (void)onExitBeacon:(CDVInvokedUrlCommand *)command;
+- (void)onChangeBeaconProximity:(CDVInvokedUrlCommand *)command;
 - (void)onBeaconRangeDidChanged:(CDVInvokedUrlCommand *)command;
 - (void)onLinkAction:(CDVInvokedUrlCommand *)command;
 - (void)onMessageAction:(CDVInvokedUrlCommand *)command;

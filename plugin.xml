@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
-        id="com.glanzkinder.seem" version="0.0.1">
+        id="com.glanzkinder.seem" version="1.0.1">
     <name>SEEM-Manager SDK</name>
     <description>Cordova/PhoneGap Plugin for SEEM-Manger</description>
     <license>TODO</license>

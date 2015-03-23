@@ -49,14 +49,24 @@ var SEEM = {
     setAutoUuidFetch: function(autoUuidFetch) {
         exec(null, null, "SEEM", "setAutoUuidFetch", [autoUuidFetch]);
     },
+    
+    /**
+     * Sets a json object for payload.
+     * Default is NULL.
+     *
+     * @param payload
+     */
+    setPayload: function(payload) {
+        exec(null, null, "SEEM", "setPayload", [payload]);
+    },
 
     /**
      * Sets a success callback which will be executed when a beacon range is entered.
      *
      * @param successCallback
      */
-    onBeaconEnter: function(successCallback) {
-        exec(successCallback, null, "SEEM", "onBeaconEnter", []);
+    onEnterBeacon: function(successCallback) {
+        exec(successCallback, null, "SEEM", "onEnterBeacon", []);
     },
 
     /**
@@ -64,8 +74,17 @@ var SEEM = {
      *
      * @param successCallback
      */
-    onBeaconExit: function(successCallback) {
-        exec(successCallback, null, "SEEM", "onBeaconExit", []);
+    onExitBeacon: function(successCallback) {
+        exec(successCallback, null, "SEEM", "onExitBeacon", []);
+    },
+    
+    /**
+     * Sets a success callback which will be executed when a beacon proximity is changed.
+     *
+     * @param successCallback
+     */
+    onChangeBeaconProximity: function(successCallback) {
+        exec(successCallback, null, "SEEM", "onChangeBeaconProximity", []);
     },
 
     /**
@@ -84,6 +103,13 @@ var SEEM = {
      */
     onMessageAction: function(successCallback) {
         exec(successCallback, null, "SEEM", "onMessageAction", []);
+    },
+
+    /**
+     * Sets a success callback which will be executed when a custom action is executed.
+     */
+    onCustomAction: function(successCallback) {
+        exec(successCallback, null, "SEEM", "onCustomAction", []);
     },
 
     /**

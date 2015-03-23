@@ -67,10 +67,13 @@ To add the plugin use the CLI of Cordova
 * setApiUrl: sets API URL
 * setApiSslEnabled: sets if ssl should be enabled
 * setAutoUuidFetch: sets if auto fetching of UUIDs should be enabled
+* setPayload: sets payload object for scripted event
+* getAllMonitoredBeaconRegions: returns all monitored beacon regions
 * startListeningToBeaconRegion: starts listening to a beacon region
 * stopListeningToBeaconRegion: stops listening to a beacon region
-* onBeaconEnter: registers a callback for entering a beacon range
-* onBeaconExit: registers a callback for leaving a beacon range
+* onEnterBeacon: registers a callback for entering a beacon range
+* onExitBeacon: registers a callback for leaving a beacon range
+* onChangeBeaconProximity: registers a callback for changing a beacon range
 * onBeaconRangeDidChanged: registers a callback for changing beacon range event
 * onLinkAction: registers a callback for a link action event
 * onMessageAction: registers a callback for a message action event
@@ -135,6 +138,23 @@ This method is only necessary if you have a SEEM Management Platform on premise 
     SEEM.setAutoUuidFetch(true);
 
 
+### setPayload
+**Parameters:**
+
+* **payload:** An object which will be used as input for a scripted event
+
+#### Example
+
+    SEEM.setPayload({userId: 1, username: "SEEM_User"};
+
+
+### getAllMonitoredBeaconRegions
+
+#### Example
+
+    var resultArray = SEEM.getAllMonitoredBeaconRegions();
+
+
 ### startListeningToBeaconRegion
 **Note:**
 This method is only necessary if you have disabled auto fetching UUIDs from the API
@@ -195,7 +215,7 @@ This method is only necessary if you have disabled auto fetching UUIDs from the 
     }, 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX', null, null, true);
 
 
-### onBeaconEnter
+### onEnterBeacon
 
 **Parameters:**
 
@@ -203,8 +223,8 @@ This method is only necessary if you have disabled auto fetching UUIDs from the 
 
 #### Example
 
-    SEEM.onBeaconEnter(function(beacon) {
-        console.log("On Beacon Enter: ");
+    SEEM.onEnterBeacon(function(beacon) {
+        console.log("On Enter Beacon: ");
         console.log(beacon.accuracy);
         console.log(beacon.major);
         console.log(beacon.minor);
@@ -214,7 +234,7 @@ This method is only necessary if you have disabled auto fetching UUIDs from the 
     });
 
 
-### onBeaconExit
+### onExitBeacon
 
 **Parameters:**
 
@@ -222,8 +242,8 @@ This method is only necessary if you have disabled auto fetching UUIDs from the 
 
 #### Example
 
-    SEEM.onBeaconExit(function(beacon) {
-        console.log("On Beacon Exit: ");
+    SEEM.onExitBeacon(function(beacon) {
+        console.log("On Exit Beacon: ");
         console.log(beacon.accuracy);
         console.log(beacon.major);
         console.log(beacon.minor);
@@ -231,6 +251,25 @@ This method is only necessary if you have disabled auto fetching UUIDs from the 
         console.log(beacon.rssi);
         console.log(beacon.uuid);
     });
+
+
+### onChangeBeaconProximity
+
+**Parameters:**
+
+* **successCallback:** A callback that executes if a beacon proximity was changed. Invoked with a Beacon Object. (Function)
+
+#### Example
+
+SEEM.onChangeBeaconProximity(function(beacon) {
+console.log("On Change Beacon Proximity: ");
+console.log(beacon.accuracy);
+console.log(beacon.major);
+console.log(beacon.minor);
+console.log(beacon.proximity);
+console.log(beacon.rssi);
+console.log(beacon.uuid);
+});
 
 
 ### onBeaconRangeDidChanged
@@ -249,6 +288,19 @@ This method is only necessary if you have disabled auto fetching UUIDs from the 
         console.log(beacon.proximity);
         console.log(beacon.rssi);
         console.log(beacon.uuid);
+    });
+
+
+### onCustomAction
+
+**Parameters:**
+
+* **successCallback:** A callback that executes if a custom action received. Invoked with an Custom Object. (Function)
+
+### Example
+
+    SEEM.onCustomAction(function(action) {
+        console.log(action);
     });
 
 
@@ -296,6 +348,12 @@ This method is only necessary if you have disabled auto fetching UUIDs from the 
 
 
 ## Changelog
+
+### v1.0.1
+
+* Updated SEEM SDK to 1.0.4
+* Added method setPayload()
+* Added method getAllMonitoredBeaconRegions()
 
 ### v1.0.0
 

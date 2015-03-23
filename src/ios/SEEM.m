@@ -5,12 +5,14 @@
 @interface SEEM () <SEEMBeaconControllerDelegate>
 {
     SEEMBeaconController *beaconController;
-    NSString *onBeaconEnterId;
-    NSString *onBeaconExitId;
+    NSString *onEnterBeaconId;
+    NSString *onExitBeaconId;
+    NSString *onChangeBeaconProximityId;
     NSString *onBeaconRangeDidChangedId;
     NSString *onCustomActionId;
     NSString *onLinkActionId;
     NSString *onMessageActionId;
+    id payload;
 }
 @end
 
@@ -22,7 +24,7 @@
 
 - (SEEM *)pluginInitialize
 {
-	static SEEM *instance = nil;
+    static SEEM *instance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         instance = [[SEEM alloc] init];
@@ -78,123 +80,132 @@
     [beaconController setAutoUuidFetch:[value boolValue]];
 }
 
+- (void)setPayload:(CDVInvokedUrlCommand *)command
+{
+    payload = [self argumentFromCommand:command];
+}
+
 
 #pragma mark Beacon Listening
 
 - (void)getAllMonitoredBeaconRegions:(CDVInvokedUrlCommand *)command {
-	CDVPluginResult *pluginResult = nil;
-	NSMutableArray *regions = [[NSMutableArray alloc] init];
-	for (SEEMBeaconRegion *region in [beaconController getAllMonitoredBeaconRegions]) {
-		[regions addObject:@{@"uuid": (region.uuid ? region.uuid : [NSNull new]),
-							 @"major": (region.major ? region.major : [NSNull new]),
-							 @"minor": (region.minor ? region.minor : [NSNull new])}];
-	}
-	pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:regions];
-	pluginResult.keepCallback = [NSNumber numberWithBool:NO];
-	[self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    CDVPluginResult *pluginResult = nil;
+    NSMutableArray *regions = [[NSMutableArray alloc] init];
+    for (SEEMBeaconRegion *region in [beaconController getAllMonitoredBeaconRegions]) {
+        [regions addObject:@{@"uuid": (region.uuid ? region.uuid : [NSNull new]),
+                             @"major": (region.major ? region.major : [NSNull new]),
+                             @"minor": (region.minor ? region.minor : [NSNull new])}];
+    }
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:regions];
+    pluginResult.keepCallback = [NSNumber numberWithBool:NO];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
 - (void)startListeningToBeaconRegion:(CDVInvokedUrlCommand *)command
 {
- 	NSString  *uuid = nil;
- 	NSNumber *major = nil;
- 	NSNumber *minor = nil;
- 	BOOL notifyEntryStateOnDisplay = YES;
- 	if ([[command.arguments objectAtIndex:0] isKindOfClass:[NSString class]]) {
- 		uuid = [command.arguments objectAtIndex:0];
- 	}
- 	if ([[command.arguments objectAtIndex:1] isKindOfClass:[NSNumber class]]) {
- 		major = [command.arguments objectAtIndex:1];
- 	}
- 	if ([[command.arguments objectAtIndex:2] isKindOfClass:[NSNumber class]]) {
- 		minor = [command.arguments objectAtIndex:2];
- 	}
- 	if ([[command.arguments objectAtIndex:3] isKindOfClass:[NSNumber class]]) {
- 		notifyEntryStateOnDisplay = [[command.arguments objectAtIndex:3] boolValue];
- 	}
-	BOOL success = NO;
- 	if (uuid && major && minor && !success) {
- 		SEEMBeaconRegion *region = [[SEEMBeaconRegion alloc] initWithUuid:uuid Major:major Minor:minor NotifyEntryStateOnDisplay:YES];
- 		[beaconController startListeningToBeaconRegion:region];
-		success = YES;
- 	}
- 	if (uuid && major && !success) {
- 		SEEMBeaconRegion *region = [[SEEMBeaconRegion alloc] initWithUuid:uuid Major:major NotifyEntryStateOnDisplay:YES];
- 		[beaconController startListeningToBeaconRegion:region];
-		success = YES;
- 	}
- 	if (uuid && !success) {
- 		SEEMBeaconRegion *region = [[SEEMBeaconRegion alloc] initWithUuid:uuid NotifyEntryStateOnDisplay:YES];
- 		[beaconController startListeningToBeaconRegion:region];
-		success = YES;
- 	}
-
-	CDVPluginResult *pluginResult = nil;
-	if (success) {
-		pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:command.arguments];
-	}
-	else {
-		pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsArray:command.arguments];
-	}
-	pluginResult.keepCallback = [NSNumber numberWithBool:NO];
-	[self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    NSString  *uuid = nil;
+    NSNumber *major = nil;
+    NSNumber *minor = nil;
+    BOOL notifyEntryStateOnDisplay = YES;
+    if ([[command.arguments objectAtIndex:0] isKindOfClass:[NSString class]]) {
+        uuid = [command.arguments objectAtIndex:0];
+    }
+    if ([[command.arguments objectAtIndex:1] isKindOfClass:[NSNumber class]]) {
+        major = [command.arguments objectAtIndex:1];
+    }
+    if ([[command.arguments objectAtIndex:2] isKindOfClass:[NSNumber class]]) {
+        minor = [command.arguments objectAtIndex:2];
+    }
+    if ([[command.arguments objectAtIndex:3] isKindOfClass:[NSNumber class]]) {
+        notifyEntryStateOnDisplay = [[command.arguments objectAtIndex:3] boolValue];
+    }
+    BOOL success = NO;
+    if (uuid && major && minor && !success) {
+        SEEMBeaconRegion *region = [[SEEMBeaconRegion alloc] initWithUuid:uuid Major:major Minor:minor NotifyEntryStateOnDisplay:YES];
+        [beaconController startListeningToBeaconRegion:region];
+        success = YES;
+    }
+    if (uuid && major && !success) {
+        SEEMBeaconRegion *region = [[SEEMBeaconRegion alloc] initWithUuid:uuid Major:major NotifyEntryStateOnDisplay:YES];
+        [beaconController startListeningToBeaconRegion:region];
+        success = YES;
+    }
+    if (uuid && !success) {
+        SEEMBeaconRegion *region = [[SEEMBeaconRegion alloc] initWithUuid:uuid NotifyEntryStateOnDisplay:YES];
+        [beaconController startListeningToBeaconRegion:region];
+        success = YES;
+    }
+    
+    CDVPluginResult *pluginResult = nil;
+    if (success) {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:command.arguments];
+    }
+    else {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsArray:command.arguments];
+    }
+    pluginResult.keepCallback = [NSNumber numberWithBool:NO];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
 - (void)stopListeningToBeaconRegion:(CDVInvokedUrlCommand *)command
 {
-	NSString  *uuid = nil;
-	NSNumber *major = nil;
-	NSNumber *minor = nil;
-	BOOL notifyEntryStateOnDisplay = YES;
-	if ([[command.arguments objectAtIndex:0] isKindOfClass:[NSString class]]) {
-		uuid = [command.arguments objectAtIndex:0];
-	}
-	if ([[command.arguments objectAtIndex:1] isKindOfClass:[NSNumber class]]) {
-		major = [command.arguments objectAtIndex:1];
-	}
-	if ([[command.arguments objectAtIndex:2] isKindOfClass:[NSNumber class]]) {
-		minor = [command.arguments objectAtIndex:2];
-	}
-	if ([[command.arguments objectAtIndex:3] isKindOfClass:[NSNumber class]]) {
-		notifyEntryStateOnDisplay = [[command.arguments objectAtIndex:3] boolValue];
-	}
-	BOOL success = NO;
-	if (uuid && major && minor && !success) {
-		SEEMBeaconRegion *region = [[SEEMBeaconRegion alloc] initWithUuid:uuid Major:major Minor:minor NotifyEntryStateOnDisplay:YES];
-		[beaconController stopListeningToBeaconRegion:region];
-		success = YES;
-	}
-	if (uuid && major && !success) {
-		SEEMBeaconRegion *region = [[SEEMBeaconRegion alloc] initWithUuid:uuid Major:major NotifyEntryStateOnDisplay:YES];
-		[beaconController stopListeningToBeaconRegion:region];
-		success = YES;
-	}
-	if (uuid && !success) {
-		SEEMBeaconRegion *region = [[SEEMBeaconRegion alloc] initWithUuid:uuid NotifyEntryStateOnDisplay:YES];
-		[beaconController stopListeningToBeaconRegion:region];
-		success = YES;
-	}
-
-	CDVPluginResult *pluginResult = nil;
-	if (success) {
-		pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:command.arguments];
-	}
-	else {
-		pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsArray:command.arguments];
-	}
-	pluginResult.keepCallback = [NSNumber numberWithBool:NO];
-	[self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    NSString  *uuid = nil;
+    NSNumber *major = nil;
+    NSNumber *minor = nil;
+    BOOL notifyEntryStateOnDisplay = YES;
+    if ([[command.arguments objectAtIndex:0] isKindOfClass:[NSString class]]) {
+        uuid = [command.arguments objectAtIndex:0];
+    }
+    if ([[command.arguments objectAtIndex:1] isKindOfClass:[NSNumber class]]) {
+        major = [command.arguments objectAtIndex:1];
+    }
+    if ([[command.arguments objectAtIndex:2] isKindOfClass:[NSNumber class]]) {
+        minor = [command.arguments objectAtIndex:2];
+    }
+    if ([[command.arguments objectAtIndex:3] isKindOfClass:[NSNumber class]]) {
+        notifyEntryStateOnDisplay = [[command.arguments objectAtIndex:3] boolValue];
+    }
+    BOOL success = NO;
+    if (uuid && major && minor && !success) {
+        SEEMBeaconRegion *region = [[SEEMBeaconRegion alloc] initWithUuid:uuid Major:major Minor:minor NotifyEntryStateOnDisplay:YES];
+        [beaconController stopListeningToBeaconRegion:region];
+        success = YES;
+    }
+    if (uuid && major && !success) {
+        SEEMBeaconRegion *region = [[SEEMBeaconRegion alloc] initWithUuid:uuid Major:major NotifyEntryStateOnDisplay:YES];
+        [beaconController stopListeningToBeaconRegion:region];
+        success = YES;
+    }
+    if (uuid && !success) {
+        SEEMBeaconRegion *region = [[SEEMBeaconRegion alloc] initWithUuid:uuid NotifyEntryStateOnDisplay:YES];
+        [beaconController stopListeningToBeaconRegion:region];
+        success = YES;
+    }
+    
+    CDVPluginResult *pluginResult = nil;
+    if (success) {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:command.arguments];
+    }
+    else {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsArray:command.arguments];
+    }
+    pluginResult.keepCallback = [NSNumber numberWithBool:NO];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
 
 #pragma mark Beacon Controller Events
 
-- (void)onBeaconEnter:(CDVInvokedUrlCommand *)command {
-    onBeaconEnterId = command.callbackId;
+- (void)onEnterBeacon:(CDVInvokedUrlCommand *)command {
+    onEnterBeaconId = command.callbackId;
 }
 
-- (void)onBeaconExit:(CDVInvokedUrlCommand *)command {
-    onBeaconExitId = command.callbackId;
+- (void)onExitBeacon:(CDVInvokedUrlCommand *)command {
+    onExitBeaconId = command.callbackId;
+}
+
+- (void)onChangeBeaconProximity:(CDVInvokedUrlCommand *)command {
+    onChangeBeaconProximityId = command.callbackId;
 }
 
 - (void)onBeaconRangeDidChanged:(CDVInvokedUrlCommand *)command
@@ -220,60 +231,79 @@
 
 #pragma mark Beacon Controller Delegate
 
-- (void)beaconController:(SEEMBeaconController *)beaconController onBeaconEnter:(SEEMBeaconEvent *)beaconEvent
+- (void)beaconController:(SEEMBeaconController *)beaconController onEnterBeacon:(SEEMBeaconEvent *)beaconEvent
 {
-    if (onBeaconEnterId) {
-		[self.commandDelegate runInBackground:^{
-			CDVPluginResult* pluginResult = nil;
-			pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:
-							@{@"uuid":beaconEvent.beacon.uuid,
-							  @"major":beaconEvent.beacon.major,
-							  @"minor":beaconEvent.beacon.minor,
+    if (onEnterBeaconId) {
+        [self.commandDelegate runInBackground:^{
+            CDVPluginResult* pluginResult = nil;
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:
+                            @{@"uuid":beaconEvent.beacon.uuid,
+                              @"major":beaconEvent.beacon.major,
+                              @"minor":beaconEvent.beacon.minor,
                               @"proximity":beaconEvent.beacon.proximity,
                               @"rssi":beaconEvent.beacon.rssi,
                               @"accuracy":beaconEvent.beacon.accuracy}];
-			pluginResult.keepCallback = [NSNumber numberWithBool:YES];
-			[self.commandDelegate sendPluginResult:pluginResult callbackId:onBeaconEnterId];
-		}];
+            pluginResult.keepCallback = [NSNumber numberWithBool:YES];
+            [self.commandDelegate sendPluginResult:pluginResult callbackId:onEnterBeaconId];
+        }];
     }
 }
 
-- (void)beaconController:(SEEMBeaconController *)beaconController onBeaconExit:(SEEMBeaconEvent *)beaconEvent
+- (void)beaconController:(SEEMBeaconController *)beaconController onExitBeacon:(SEEMBeaconEvent *)beaconEvent
 {
-	if (onBeaconExitId) {
-		[self.commandDelegate runInBackground:^{
-			CDVPluginResult* pluginResult = nil;
-			pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:
-							@{@"uuid":beaconEvent.beacon.uuid,
-							  @"major":beaconEvent.beacon.major,
-							  @"minor":beaconEvent.beacon.minor,
-							  @"proximity":beaconEvent.beacon.proximity}];
-			pluginResult.keepCallback = [NSNumber numberWithBool:YES];
-			[self.commandDelegate sendPluginResult:pluginResult callbackId:onBeaconExitId];
-		}];
-	}
+    if (onExitBeaconId) {
+        [self.commandDelegate runInBackground:^{
+            CDVPluginResult* pluginResult = nil;
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:
+                            @{@"uuid":beaconEvent.beacon.uuid,
+                              @"major":beaconEvent.beacon.major,
+                              @"minor":beaconEvent.beacon.minor,
+                              @"proximity":beaconEvent.beacon.proximity}];
+            pluginResult.keepCallback = [NSNumber numberWithBool:YES];
+            [self.commandDelegate sendPluginResult:pluginResult callbackId:onExitBeaconId];
+        }];
+    }
+}
+
+- (void)beaconController:(SEEMBeaconController *)beaconController onChangeBeaconProximity:(SEEMBeaconEvent *)beaconEvent
+{
+    if (onChangeBeaconProximityId) {
+        [self.commandDelegate runInBackground:^{
+            CDVPluginResult* pluginResult = nil;
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:
+                            @{@"uuid":beaconEvent.beacon.uuid,
+                              @"major":beaconEvent.beacon.major,
+                              @"minor":beaconEvent.beacon.minor,
+                              @"proximity":beaconEvent.beacon.proximity}];
+            pluginResult.keepCallback = [NSNumber numberWithBool:YES];
+            [self.commandDelegate sendPluginResult:pluginResult callbackId:onChangeBeaconProximityId];
+        }];
+    }
 }
 
 - (void)beaconController:(SEEMBeaconController *)beaconController onBeaconRangeDidChanged:(SEEMBeacon *)beacon
 {
     if (onBeaconRangeDidChangedId) {
-		[self.commandDelegate runInBackground:^{
-			CDVPluginResult* pluginResult = nil;
-			pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:
-							@{@"uuid":beacon.uuid,
-							  @"major":beacon.major,
+        [self.commandDelegate runInBackground:^{
+            CDVPluginResult* pluginResult = nil;
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:
+                            @{@"uuid":beacon.uuid,
+                              @"major":beacon.major,
                               @"minor":beacon.minor,
                               @"proximity":beacon.proximity,
                               @"rssi":beacon.rssi,
                               @"accuracy":beacon.accuracy}];
-			pluginResult.keepCallback = [NSNumber numberWithBool:YES];
-			[self.commandDelegate sendPluginResult:pluginResult callbackId:onBeaconRangeDidChangedId];
-		}];
+            pluginResult.keepCallback = [NSNumber numberWithBool:YES];
+            [self.commandDelegate sendPluginResult:pluginResult callbackId:onBeaconRangeDidChangedId];
+        }];
     }
 }
 
 - (id)beaconController:(SEEMBeaconController *)beaconController payloadForEvent:(SEEMBeaconEvent *)beaconEvent
 {
+    if (payload) {
+        return payload;
+    }
     return [NSDictionary new];
 }
 
