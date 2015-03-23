@@ -5,6 +5,9 @@
     <description>Cordova/PhoneGap Plugin for SEEM-Manger</description>
     <license>TODO</license>
     <keywords>cordova, phonegap, beacons, iBeacons, SEEM, SEEM-Manager</keywords>
+    <repo>https://github.com/glanzkinder/SEEM-Beacon-Manager-Cordova-SDK.git</repo>
+    <issue>https://github.com/glanzkinder/SEEM-Beacon-Manager-Cordova-SDK/issues</issue>
+
     <js-module src="www/seem.js" name="SEEM">
         <clobbers target="SEEM" />
     </js-module>
