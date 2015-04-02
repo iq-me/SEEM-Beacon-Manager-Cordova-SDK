@@ -2,7 +2,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         id="com.glanzkinder.seem" version="1.0.1">
     <name>SEEM-Manager SDK</name>
-    <description>Cordova/PhoneGap Plugin for SEEM-Manger</description>
+    <description>Cordova/PhoneGap Plugin for SEEM-Manager</description>
     <license>New BSD License</license>
     <keywords>cordova, phonegap, beacons, iBeacons, SEEM, SEEM-Manager</keywords>
     <repo>https://github.com/glanzkinder/SEEM-Beacon-Manager-Cordova-SDK.git</repo>
