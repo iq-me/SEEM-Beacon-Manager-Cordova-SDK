@@ -349,6 +349,10 @@ console.log(beacon.uuid);
 
 ## Changelog
 
+### v1.0.2
+
+* Updated SEEM SDK to 1.0.5
+
 ### v1.0.1
 
 * Updated SEEM SDK to 1.0.4

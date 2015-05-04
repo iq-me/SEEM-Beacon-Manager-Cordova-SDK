@@ -40,4 +40,4 @@ typedef void (^BeaconAction)(SEEMBeacon *beacon, SEEMBeaconEvent *event);
 #define SEEMEnableDebugMode() [[SEEMLogManager sharedInstance] setDebugMode:YES]
 #define SEEMDisableDebugMode() [[SEEMLogManager sharedInstance] setDebugMode:NO]
 
-#define SEEM_SDK_VERSION @"1.0.4"
+#define SEEM_SDK_VERSION @"1.0.5"

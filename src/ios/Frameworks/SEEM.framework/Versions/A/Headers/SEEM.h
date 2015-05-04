@@ -2,7 +2,7 @@
  @name SEEM
  @file SEEM.h
  @copyright Glanzkinder GmbH
- @version 1.0.4
+ @version 1.0.5
  */
 
 /**
@@ -81,7 +81,7 @@
  @endcode
  
  @subsection pos3_1 3.1 Fetch beacon regions automatically and start listening
- Default is YES and the SEEM-Manger starts to listen for beacons automatically.
+ Default is YES and the SEEM-Manager starts to listen for beacons automatically.
  @code
  [beaconController setAutoUuidFetch:YES];
  @endcode

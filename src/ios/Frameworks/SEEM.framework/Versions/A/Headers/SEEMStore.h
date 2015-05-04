@@ -59,4 +59,10 @@
  */
 + (NSMutableArray *)loadRequestQueue;
 
++ (BOOL)saveVisibleBeaconRegions:(NSMutableArray *)beacons;
++ (NSMutableArray *)loadVisibleBeaconRegions;
+
++ (BOOL)saveVisibleBeacons:(NSMutableArray *)regions;
++ (NSMutableArray *)loadVisibleBeacons;
+
 @end
